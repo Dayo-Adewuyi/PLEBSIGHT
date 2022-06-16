@@ -3,6 +3,7 @@ import './App.css';
 import {ConnectProvider} from "./context/ConnectContext";
 import { networks } from './utils/networks';
 import Footer from "./components/Footer";
+import Mine from "./components/Mine"
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
 import Recommend from "./components/Recommend";
@@ -147,11 +148,14 @@ export default function App() {
         return(<>
          <ScrollToTop />
         <Navbar />
+         
         <Hero />
         <Services />
         <Recommend />
         <Testimonials />
+       
         <Footer />
+        
             </>
         )
       };

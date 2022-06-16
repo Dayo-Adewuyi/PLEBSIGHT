@@ -1,52 +1,53 @@
 import React from "react";
+import {useState, useEffect, useContext} from "react";
 import styled from "styled-components";
 import avatarImage from "../assets/avatarImage.jpeg";
+import { ConnectContext } from "../context/ConnectContext";
+
+
 export default function Testimonials() {
+  const { currentAccount, vote, booth } = useContext(ConnectContext);
+  const [election, setelection] = useState({})
+
+  const voteCandidate = async() => {
+    // // const result = await vote(candidate.candidateId, election.electionId);
+    // console.log(result);
+  }
+  const fetchElection = async() => {
+
+    const result = await booth();
+    setelection(result);
+  }
+  console.log(election)
+
   return (
     <Section id="testimonials">
       <div className="title">
-        <h2>Happy Customers</h2>
+        <h2>ELECTION BOOTH</h2>
+      </div>
+      <div>
+        <button onClick={fetchElection}>VIEW ALL ELECTIONS</button>
       </div>
       <div className="testimonials">
         <div className="testimonial">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate
-            asperiores eaque.
-          </p>
+          {election.electionId}
+          <p> {election.details}</p>
           <div className="info">
-            <img src={avatarImage} alt="" />
-            <div className="details">
-              <h4>Kishan Sheth</h4>
-              <span>CEO - Shashaan Web Solutions</span>
-            </div>
+            {election.candidates?.map((candidate, index) => {
+               return( <div key={index}>
+                  <img src={avatarImage} alt="avatar" />
+                  <p> {candidate.candidateId}</p>
+                  <p>{candidate.name}</p>
+                  <span>{candidate.vote}</span>
+                  <button onClick={voteCandidate}>vote</button>
+                </div>)
+})
+                          }
+           
           </div>
         </div>
-        <div className="testimonial">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate
-            asperiores eaque.
-          </p>
-          <div className="info">
-            <img src={avatarImage} alt="" />
-            <div className="details">
-              <h4>Kishan Sheth</h4>
-              <span>CEO - Shashaan Web Solutions</span>
-            </div>
-          </div>
-        </div>
-        <div className="testimonial">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate
-            asperiores eaque.
-          </p>
-          <div className="info">
-            <img src={avatarImage} alt="" />
-            <div className="details">
-              <h4>Kishan Sheth</h4>
-              <span>CEO - Shashaan Web Solutions</span>
-            </div>
-          </div>
-        </div>
+        
+      
       </div>
     </Section>
   );

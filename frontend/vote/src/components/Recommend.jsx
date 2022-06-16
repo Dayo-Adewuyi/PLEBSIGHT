@@ -1,40 +1,87 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ethers } from "ethers";
-import { AirdropContractAddress } from "../constants/constants";
+import { VotingContractAddress, AirdropContractAddress } from "../constants/constants";
 import tokenAbi from "../constants/token";
 import nftAbi from "../constants/nft";
 import airdropAbi from "../constants/airdrop";
+import VoteAbi from  "../constants/voteAbi.json";
+
 import {ConnectContext} from "../context/ConnectContext";
 import styled from "styled-components";
+
 import { create as ipfsHttpClient } from "ipfs-http-client";
 
 
-const ipfs = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
+ const ipfs = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
 export default function Recommend() {
-  const { createElection, currentAccount } = useContext(ConnectContext);
-  
-  const [election, setElection] = useState({
-    address: "",
-    details: "",
-    candidates: [],
-  });
-
-  
-
+  const { currentAccount } = useContext(ConnectContext);
  
+  const [election, setElection] = useState({
+    details: "",
+    address: "",
+  });
+  const [candidates , setCandidates] = useState([])
+  const [candidate, setCandidate] = useState("");
+
+  function handleChange(event) {
+    const {name, value} = event.target
+    setElection(prev => ({
+        ...prev,
+        [name]: value
+    }))
+}
+  const addCandidate = (event) =>{
+    event.preventDefault();
+    setCandidates(prev => [...prev, candidate])  ;
+  }
+  const removeCandidate = (event) =>{
+    event.preventDefault();
+    candidates.pop();
+  }
+  const handleCandidate = (e) => {
+    setCandidate(e.target.value);
+  }
+  const createElection = async() => {
+
+    try{
+      const { ethereum } = window;
+
+      if(ethereum){
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const voteContract = new ethers.Contract(VotingContractAddress, VoteAbi.abi, signer);
+      const tx = await voteContract.setUp(election.address, election.details, candidates);
+      const receipt = await tx.wait();
+      console.log(receipt);}
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  
+  
   return (
     <Section id="recommend">
       <div className="title">
         <h2>Create An Election</h2>
       </div>
       <div className="packages">
-        <ul>
+      
+      <label>Election Details</label>
+      <input type="text" name="details" placeholder="name of election" onChange={handleChange}/>
+      <label>Token/NFT Address</label>
+      <input type="text" name="address" placeholder="address" onChange={handleChange}/>
+      <label>Add Candidates</label>
+         <input type="text" placeholder="candidate name" onChange={handleCandidate} />
+          <button onClick={addCandidate}>Add</button>
+          <button onClick={removeCandidate}>Remove Candidate</button>
+          <button onClick={createElection}> Create Election </button>
+    
          
-        </ul>
       </div>
       <div className="destinations">
-       
+      <p>{candidates.map((name) => <li key = {name}> {name}</li>)}</p>
               
       </div>
     </Section>

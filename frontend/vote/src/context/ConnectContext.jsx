@@ -62,8 +62,8 @@ const booth = async() => {
   const contract = voteContract();
   try{
     const tx = await contract.booth();
-    const receipt = await tx.wait();
-    return receipt;
+    
+    return tx;
   }catch(err){
     console.log(err)
   }
@@ -73,8 +73,8 @@ const myElections = async() => {
   const contract = voteContract();
   try{
     const tx = await contract.myElections();
-    const receipt = await tx.wait();
-    return receipt;
+
+    return tx;
   }catch(err){
     console.log(err)
   }
