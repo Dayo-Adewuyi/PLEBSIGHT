@@ -1,181 +1,69 @@
-import React, { useState, useContext , useEffect } from "react";
-import styled from "styled-components";
+import { useState, useContext } from "react";
+import "../styles/navbar.css";
+import { Link } from 'react-router-dom';
 import logo from "../assets/logo.png";
-import { GiHamburgerMenu } from "react-icons/gi";
 import { VscChromeClose } from "react-icons/vsc";
 import { ConnectContext } from "../context/ConnectContext";
+
 export default function Navbar() {
+  const [isNavExpanded, setIsNavExpanded] = useState(false);
   const {currentAccount } = useContext(ConnectContext);
   const [navbarState, setNavbarState] = useState(false);
   return (
-    <>
-      <Nav>
-        <div className="brand">
-          <div className="container">
-            <img src={logo} alt="" />
+    <nav className="navigation">
+      <div>
+      <Link to="/" className="brand-name">
+      <img src={logo} alt="" />
             PlebSite
-          </div>
-          <div className="toggle">
-            {navbarState ? (
-              <VscChromeClose onClick={() => setNavbarState(false)} />
-            ) : (
-              <GiHamburgerMenu onClick={() => setNavbarState(true)} />
-            )}
-          </div>
-        </div>
+      </Link>
 
-        <ul>
+      {isNavExpanded ? (
+             <span className="close" onClick={() => setIsNavExpanded(!isNavExpanded)}>X</span>
+            ) : (
+              <button
+        className="hamburger"
+        onClick={() => {
+          setIsNavExpanded(!isNavExpanded);
+        }}
+      >
+        {/* icon from Heroicons.com */}
+        
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 20 20"
+          fill="white"
+        >
+          <path
+            fillRule="evenodd"
+            d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
+            clipRule="evenodd"
+          />
+        </svg>
+      </button>
+            )}
+      </div>
+      <div><button className="address">{currentAccount.slice(0, 6)}...{currentAccount.slice(-4)}</button></div>
+      <div
+        className={
+          isNavExpanded ? "navigation-menu expanded" : "navigation-menu"
+        }
+      >
+       <div> <ul>
+        
           <li>
-            <a href="#home">Home</a>
+          <Link to="/CreateElection">Create Election</Link>
           </li>
           <li>
-            <a href="#services">Create Election</a>
+         <Link to="/Election-Booth">Booth</Link>
           </li>
           <li>
-            <a href="#recommend">Booth</a>
+         <Link to="/MyElection">My Election</Link>
           </li>
-          <li>
-            <a href="#testimonials">My Elections</a>
-          </li>
+          
         </ul>
-        <button>{currentAccount.slice(0, 6)}...{currentAccount.slice(-4)}</button>
-      </Nav>
-      <ResponsiveNav state={navbarState}>
-        <ul>
-          <li>
-            <a href="#home" onClick={() => setNavbarState(false)}>
-              Home
-            </a>
-          </li>
-          <li>
-            <a href="#services" onClick={() => setNavbarState(false)}>
-              Create Elections
-            </a>
-          </li>
-          <li>
-            <a href="#recommend" onClick={() => setNavbarState(false)}>
-              booth
-            </a>
-          </li>
-          <li>
-            <a href="#testimonials" onClick={() => setNavbarState(false)}>
-              My elections
-            </a>
-          </li>
-        </ul>
-      </ResponsiveNav>
-    </>
+        </div>
+      </div>
+    </nav>
   );
 }
-
-const Nav = styled.nav`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  .brand {
-    .container {
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 1.2rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-    .toggle {
-      display: none;
-    }
-  }
-  ul {
-    display: flex;
-    gap: 1rem;
-    list-style-type: none;
-    li {
-      a {
-        text-decoration: none;
-        color: #0077b6;
-        font-size: 1.2rem;
-        transition: 0.1s ease-in-out;
-        &:hover {
-          color: #023e8a;
-        }
-      }
-      &:first-of-type {
-        a {
-          color: #023e8a;
-          font-weight: 900;
-        }
-      }
-    }
-  }
-  button {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 1rem;
-    border: none;
-    color: white;
-    background-color: #48cae4;
-    font-size: 1.1rem;
-    letter-spacing: 0.1rem;
-    text-transform: uppercase;
-    transition: 0.3s ease-in-out;
-    &:hover {
-      background-color: #023e8a;
-    }
-  }
-  @media screen and (min-width: 280px) and (max-width: 1080px) {
-    .brand {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      .toggle {
-        display: block;
-      }
-    }
-    ul {
-      display: none;
-    }
-    button {
-      display: none;
-    }
-  }
-`;
-
-const ResponsiveNav = styled.div`
-  display: flex;
-  position: absolute;
-  z-index: 1;
-  top: ${({ state }) => (state ? "50px" : "-400px")};
-  background-color: white;
-  height: 30vh;
-  width: 100%;
-  align-items: center;
-  transition: 0.3s ease-in-out;
-  ul {
-    list-style-type: none;
-    width: 100%;
-    li {
-      width: 100%;
-      margin: 1rem 0;
-      margin-left: 2rem;
-
-      a {
-        text-decoration: none;
-        color: #0077b6;
-        font-size: 1.2rem;
-        transition: 0.1s ease-in-out;
-        &:hover {
-          color: #023e8a;
-        }
-      }
-      &:first-of-type {
-        a {
-          color: #023e8a;
-          font-weight: 900;
-        }
-      }
-    }
-  }
-`;

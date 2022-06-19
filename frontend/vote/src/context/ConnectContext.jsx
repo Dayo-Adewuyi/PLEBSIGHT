@@ -36,10 +36,10 @@ const startElection = async(electionId) => {
   }
 }
 
-const vote = async(electionId,candidateId) => {
+const vote = async(candidateId, electionId) => {
   const contract = voteContract();
   try{
-    const tx = await contract.vote(electionId,candidateId);
+    const tx = await contract.vote(candidateId, electionId);
     const receipt = await tx.wait();
     console.log(receipt);
   }catch(err){

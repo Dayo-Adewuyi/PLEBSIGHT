@@ -7,7 +7,7 @@ import { ConnectContext } from "../context/ConnectContext";
 
 export default function Testimonials() {
   const { currentAccount, vote, booth } = useContext(ConnectContext);
-  const [election, setelection] = useState({})
+  const [election, setelection] = useState([])
 
   const voteCandidate = async() => {
     // // const result = await vote(candidate.candidateId, election.electionId);
@@ -18,18 +18,35 @@ export default function Testimonials() {
     const result = await booth();
     setelection(result);
   }
-  console.log(election)
+  
+  useEffect(() => {fetchElection()}, [])
 
   return (
     <Section id="testimonials">
       <div className="title">
         <h2>ELECTION BOOTH</h2>
       </div>
-      <div>
-        <button onClick={fetchElection}>VIEW ALL ELECTIONS</button>
-      </div>
+      
       <div className="testimonials">
         <div className="testimonial">
+          {election.map((element, index) => {
+            if (element.active){
+              return (
+                <div key={index}>
+                  <h3>{element.details}</h3>
+                  {element.candidates.map((candidate, index) => { 
+                  
+                  return (<><p key={index}>{candidate.name}: {" "} {(candidate.vote).toNumber()} {" "}Votes</p> 
+                 
+                  <button onClick={() => vote( (candidate.candidateId).toNumber(), (element.electionId).toNumber())}>VOTE</button></>)
+                  })}
+                 
+                </div>
+              )
+            }  else{
+              return (<></>)
+          }
+          })}
           {election.electionId}
           <p> {election.details}</p>
           <div className="info">

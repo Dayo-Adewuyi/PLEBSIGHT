@@ -34,6 +34,7 @@ const Section = styled.section`
   margin-top: 2rem;
   width: 100%;
   height: 100%;
+  z-index: -1;
 
   .background {
     height: 100%;
