@@ -19,7 +19,7 @@ export default function Hero() {
         <div className="search">
           <div className="container">
             <label htmlFor="">Want to elect a Governor for your DAO?</label>
-            <p> Connect your wallet to get started</p>
+            <p> Create an Election to get started</p>
           </div>
           <a href="#recommend"><button>Get Started</button></a>
          
