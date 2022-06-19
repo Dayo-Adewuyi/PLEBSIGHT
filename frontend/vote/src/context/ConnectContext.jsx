@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import VoteAbi from "../constants/voteAbi";
 import {VotingContractAddress } from "../constants/constants";
+import { ToastContainer, toast } from 'react-toastify';
 
 export const ConnectContext = React.createContext();
 
@@ -14,10 +15,10 @@ const voteContract = new ethers.Contract(VotingContractAddress, VoteAbi.abi, sig
 return voteContract;
 }
 
-const createElection = async(address,details,candidates) => {
+const createElection = async(address,details,candidates,hash) => {
   const contract = voteContract();
   try{
-    const tx = await contract.setUp(address,details,candidates);
+    const tx = await contract.setUp(address,details,candidates,hash);
     const receipt = await tx.wait();
     console.log(receipt);
   }catch(err){
@@ -38,12 +39,15 @@ const startElection = async(electionId) => {
 
 const vote = async(candidateId, electionId) => {
   const contract = voteContract();
+  const id = toast.loading("voting...")
   try{
     const tx = await contract.vote(candidateId, electionId);
     const receipt = await tx.wait();
     console.log(receipt);
+    toast.update(id,{type: "success", render: "voted successfully", isLoading: false, autoClose: 5000,})
   }catch(err){
     console.log(err)
+    toast.update(id,{type: "error", render: "You can only vote once", isLoading: false, autoClose: 5000,})
   }
 }
 

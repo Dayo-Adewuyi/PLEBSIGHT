@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import { BsLinkedin, BsFacebook } from "react-icons/bs";
+
 import { FaGithub } from "react-icons/fa";
 export default function Footer() {
   return (
     <FooterContainer>
-      <span>Copyright &copy; 2021 Travelo. All rights reserved</span>
+      <span>Copyright &copy; 2021 Hamid. All rights reserved</span>
       <div className="footer-container">
 					<FaGithub className="twitter-logo" />
 					<a
@@ -25,7 +25,7 @@ const FooterContainer = styled.footer`
   background-color: #d0d8ff;
   border-radius: 0.5rem;
   padding: 2.5rem;
-
+  
   ul {
     display: flex;
     list-style-type: none;

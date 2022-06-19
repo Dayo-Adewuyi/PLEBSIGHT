@@ -14,13 +14,7 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Airdrop = await hre.ethers.getContractFactory("Airdrop");
-  const airdrop = await Airdrop.deploy();
-
-  await airdrop.deployed();
-
-  console.log("Voting Airdrop deployed to:", airdrop.address);
-
+ 
 
   const Vote = await hre.ethers.getContractFactory("Vote");
   const vote = await Vote.deploy();

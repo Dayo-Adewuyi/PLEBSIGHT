@@ -3,6 +3,7 @@ import {useState, useEffect, useContext} from "react";
 import styled from "styled-components";
 import avatarImage from "../assets/avatarImage.jpeg";
 import { ConnectContext } from "../context/ConnectContext";
+import { ToastContainer, toast } from 'react-toastify';
 
 
 export default function Testimonials() {
@@ -36,9 +37,9 @@ export default function Testimonials() {
                   <h3>{element.details}</h3>
                   {element.candidates.map((candidate, index) => { 
                   
-                  return (<><p key={index}>{candidate.name}: {" "} {(candidate.vote).toNumber()} {" "}Votes</p> 
+                  return (<div className="election"><img src={`https://ipfs.infura.io/ipfs/${candidate.photoHash}`} width="70px" height="70px"/><br></br><p key={index}>{candidate.name}</p> 
                  
-                  <button onClick={() => vote( (candidate.candidateId).toNumber(), (element.electionId).toNumber())}>VOTE</button></>)
+                  <button onClick={() => vote( (candidate.candidateId).toNumber(), (element.electionId).toNumber())}>VOTE</button></div>)
                   })}
                  
                 </div>
@@ -52,7 +53,7 @@ export default function Testimonials() {
           <div className="info">
             {election.candidates?.map((candidate, index) => {
                return( <div key={index}>
-                  <img src={avatarImage} alt="avatar" />
+                  <img alt="avatar" />
                   <p> {candidate.candidateId}</p>
                   <p>{candidate.name}</p>
                   <span>{candidate.vote}</span>
@@ -64,7 +65,7 @@ export default function Testimonials() {
           </div>
         </div>
         
-      
+        <ToastContainer />
       </div>
     </Section>
   );
@@ -87,6 +88,14 @@ const Section = styled.section`
       border-radius: 0.5rem;
       box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
       transition: 0.3s ease-in-out;
+      .election{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 2rem;
+        gap: 2rem;
+        padding: 2rem;
+      }
       &:hover {
         transform: translateX(0.4rem) translateY(-1rem);
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;

@@ -4,40 +4,34 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 ///@dev  ERC20 interface to enable us access ERC20 smart contract functions
-interface IERC20{
+interface IERC20 {
     function balanceOf(address owner) external view returns (uint256);
-    function approve(address spender, uint256 amount) external returns (bool);
-    function transferFrom(address from,address to,uint256 amount) external returns (bool);
-    event Transfer(address indexed from, address indexed to, uint256 value);
 }
 
 ///@dev  ERC721 interface to enable us access ERC721 smart contract functions
-interface IERC721{
+interface IERC721 {
     function balanceOf(address owner) external view returns (uint256);
-    function setApprovalForAll(address operator, bool _approved) external;
-    function safeTransferFrom(address from,address to,uint256 tokenId) external;
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 }
 
 ///@author  Hamid Adewuyi
 ///@title  Vote -A decentraclized voting contract
 
-contract Vote  is Pausable {
-    constructor (){
+contract Vote is Pausable {
+    constructor() {
         owner = msg.sender;
     }
+
     ///========================== STATE VARIABLES ==========================
     ///@dev  The owner of the contract
     address public owner;
     ///@notice keeps track of the number of candidates
     uint public candidateId = 0;
     ///@notice keeps track of the number of elections
-    uint public electionId= 0;
+    uint public electionId = 0;
 
     ///@notice The list of all elections
     ///@dev mapping of electionId to election
-    mapping (uint => Election) public allElections;
+    mapping(uint => Election) public allElections;
     ///@notice The list of all candidates
     ///@dev mapping of candidateId to candidate
     mapping(uint => Candidate) public allCandidates;
@@ -46,7 +40,9 @@ contract Vote  is Pausable {
     mapping(uint => mapping(address => bool)) public voted;
     ///@notice announce if there is a tie
     string public tie;
-    
+
+    uint winnerId;
+
     ///@notice struct to hold election details
     struct Election {
         uint electionId;
@@ -57,30 +53,57 @@ contract Vote  is Pausable {
         Candidate[] candidates;
     }
     ///@notice struct to hold candidate details
-    struct Candidate{
+    struct Candidate {
         uint electionId;
         uint candidateId;
+        string photoHash;
         string name;
         uint vote;
     }
     ///========================== EVENTS ==========================
-    event ElectionCreated(uint indexed electionId, address indexed creator, string details);
-    event ElectionStarted(uint indexed electionId, address indexed creator, string details);
-    event ElectionEnded(uint indexed electionId, address indexed creator, string details);
-    event ElectionVoted(uint indexed electionId, address indexed voter, uint indexed candidateId);
-
-
-
+    event ElectionCreated(
+        uint indexed electionId,
+        address indexed creator,
+        string details
+    );
+    event ElectionStarted(
+        uint indexed electionId,
+        address indexed creator,
+        string details
+    );
+    event ElectionEnded(
+        uint indexed electionId,
+        address indexed creator,
+        string details
+    );
+    event ElectionVoted(
+        uint indexed electionId,
+        address indexed voter,
+        uint indexed candidateId
+    );
 
     ///========================== FUNCTIONS ==========================
     ///@notice function to create an election
     ///@param _identifier the address of the token or NFT contract
     ///@param _details the details of the election
     ///@param _candidate the name of candidates
-    function setUp( address _identifier, string memory _details , string[] calldata _candidate) whenNotPaused public {  
+    function setUp(
+        address _identifier,
+        string memory _details,
+        string[] calldata _candidate,
+        string[] calldata _photoHash
+    ) public whenNotPaused {
+        require(_identifier != address(0), "invalid contract address");
+        require(bytes(_details).length > 0, "invalid election details");
+        require(_candidate.length > 0, "Please add some candidates");
+        require(_photoHash.length > 0, "Please add some photos");
+        require(
+            _candidate.length == _photoHash.length,
+            "Please add the same number of candidates and photos"
+        );
         ///@notice increment the electionId
         electionId++;
-        ///@notice create a new election  
+        ///@notice create a new election
         Election storage election = allElections[electionId];
         ///@notice set the election id
         election.electionId = electionId;
@@ -95,106 +118,132 @@ contract Vote  is Pausable {
 
         ///@notice create a new candidate for the election
         ///@dev to loop through the array of candidates and create a new candidate
-        for(uint i = 0; i < _candidate.length; i++){
+        for (uint i = 0; i < _candidate.length; i++) {
             ///@notice increment the candidateId
             candidateId++;
             ///@notice create a new candidate
-            Candidate memory candidate = Candidate(electionId,candidateId,_candidate[i],0);
+            Candidate memory candidate = Candidate(
+                electionId,
+                candidateId,
+                _photoHash[i],
+                _candidate[i],
+                0
+            );
             allCandidates[candidateId] = candidate;
             election.candidates.push(candidate);
         }
 
         emit ElectionCreated(electionId, msg.sender, _details);
     }
+
     ///@notice function to start an election
     ///@param _electionId the id of the election
-    function start(uint _electionId) whenNotPaused public {
-
+    function start(uint _electionId) public whenNotPaused {
         ///@notice check if user is the creator of the election
-        require(allElections[_electionId].creator == msg.sender, "only moderator can start an election");
+        require(
+            allElections[_electionId].creator == msg.sender,
+            "only moderator can start an election"
+        );
         ///@notice change the status of the election to active
         allElections[_electionId].active = true;
 
-        emit ElectionStarted(_electionId, msg.sender, allElections[_electionId].details);
-           }
-    
+        emit ElectionStarted(
+            _electionId,
+            msg.sender,
+            allElections[_electionId].details
+        );
+    }
+
     ///@notice function to vote for a candidate
     ///@param _candidateId is the Id of the candidate
     ///@param _electionId is the Id of the election
-    function vote(uint _candidateId,uint _electionId ) whenNotPaused public {
+    function vote(uint _candidateId, uint _electionId) public whenNotPaused {
         ///@notice check if user has already voted
-        require(voted[_electionId][msg.sender] == false, "you have already voted");
+        require(
+            voted[_electionId][msg.sender] == false,
+            "you have already voted"
+        );
         ///@notice check if the election is active
-        require(allElections[_electionId].active == true, "election have not begun");
+        require(
+            allElections[_electionId].active == true,
+            "election have not begun"
+        );
         ///@notice address of the identifier of the election
 
         address identifier = allElections[_electionId].identifier;
         ///@notice check user's identifier's balance
-        require(IERC20(identifier).balanceOf(msg.sender) > 0 || IERC721(identifier).balanceOf(msg.sender) > 0,"only registered voters can vote");
-
-        ///@notice increment the vote of the candidate
-        allCandidates[_candidateId].vote++;
+        require(
+            IERC20(identifier).balanceOf(msg.sender) > 0 ||
+                IERC721(identifier).balanceOf(msg.sender) > 0,
+            "only registered voters can vote"
+        );
 
         ///@notice set the user as voted
         voted[_electionId][msg.sender] = true;
 
+        ///@notice increment the vote of the candidate
+        allCandidates[_candidateId].vote++;
+
         emit ElectionVoted(_electionId, msg.sender, _candidateId);
     }
-    
+
     ///@notice function to get the winner of the election
     ///@param _electionId is the Id of the election
-    
-    function getWinner(uint _electionId) public whenNotPaused returns (Candidate[] memory,string memory) {
+
+    function getWinner(uint _electionId)
+        public
+        whenNotPaused
+        returns (Candidate[] memory, string memory)
+    {
         ///@notice check if the user is the creator of the election
-        require(allElections[_electionId].creator == msg.sender, "only moderators can announce winner");
+        require(
+            allElections[_electionId].creator == msg.sender,
+            "only moderators can announce winner"
+        );
         ///@notice to set the election status to false
         allElections[_electionId].active = false;
 
         ///@notice to get the winner of the election
         Candidate[] memory contestants = new Candidate[](candidateId);
         uint winningVoteCount = 0;
-        uint256 winnerId;
         uint winningCandidateIndex = 0;
-        for(uint i =0; i < candidateId ; i++){
-            if(allCandidates[i + 1].electionId == _electionId){
-                if (allCandidates[i + 1].vote > winningVoteCount){
-                     winningVoteCount = allCandidates[i + 1].vote;
-                     uint currentId = allCandidates[i + 1].candidateId;
-                        winnerId= currentId;
+        for (uint i = 0; i < candidateId; i++) {
+            if (allCandidates[i + 1].electionId == _electionId) {
+                if (allCandidates[i + 1].vote > winningVoteCount) {
+                    winningVoteCount = allCandidates[i + 1].vote;
+                    uint currentId = allCandidates[i + 1].candidateId;
+                    winnerId = currentId;
 
-                      Candidate storage currentItem = allCandidates[currentId];
+                    Candidate storage currentItem = allCandidates[currentId];
                     contestants[winningCandidateIndex] = currentItem;
                     winningCandidateIndex += 1;
-                        tie="";
-                }else if(allCandidates[i + 1].vote == winningVoteCount){
+                    tie = "We have a winner";
+                } else if (allCandidates[i + 1].vote == winningVoteCount) {
                     tie = "This ended in a tie";
                 }
-                
             }
-            emit ElectionEnded(_electionId, msg.sender, allElections[_electionId].details);
+            emit ElectionEnded(
+                _electionId,
+                msg.sender,
+                allElections[_electionId].details
+            );
         }
-       
-    return (contestants, tie);
 
-    
-}
+        return (contestants, tie);
+    }
 
-///@notice function to get active elections
-function booth() public view whenNotPaused returns (Election[] memory){
+    ///@notice function to get active elections
+    function booth() public view whenNotPaused returns (Election[] memory) {
         ///@notice to track active elections
-         uint currentIndex = 0;
-         ///@notice to store total number of elections
-         uint total = electionId;
+        uint currentIndex = 0;
+        ///@notice to store total number of elections
+        uint total = electionId;
 
         ///@dev new instance of election
-        Election[] memory booths = new Election[](total );
+        Election[] memory booths = new Election[](total);
 
         /// @notice Loop through all items ever created
-        for (
-            uint i = 0;
-            i < electionId;
-            i++) {
-            
+        for (uint i = 0; i < electionId; i++) {
             /// @notice Get only active elections
             if (allElections[i + 1].active == true) {
                 uint currentId = allElections[i + 1].electionId;
@@ -204,24 +253,28 @@ function booth() public view whenNotPaused returns (Election[] memory){
             }
         }
         return booths;
-   
+    }
+
+    function winningCandidate() public view returns (Candidate memory) {
+        return allCandidates[winnerId];
     }
 
     ///notice function to get elections created by user
-function myElections() public view  whenNotPaused returns (Election[] memory){
+    function myElections()
+        public
+        view
+        whenNotPaused
+        returns (Election[] memory)
+    {
         ///@notice to track elections created by user
-         uint currentIndex = 0;
-         ///@notice to store total number of elections
-         uint total = electionId;
+        uint currentIndex = 0;
+        ///@notice to store total number of elections
+        uint total = electionId;
 
         Election[] memory items = new Election[](total);
 
         /// @notice Loop through all elections ever created
-        for (
-            uint i = 0;
-            i < electionId;
-            i++) {
-            
+        for (uint i = 0; i < electionId; i++) {
             /// @notice Get only elections created by user
             if (allElections[i + 1].creator == msg.sender) {
                 uint currentId = allElections[i + 1].electionId;
@@ -231,9 +284,9 @@ function myElections() public view  whenNotPaused returns (Election[] memory){
             }
         }
         return items;
-   
     }
-     ///@dev function to pause the contract
+
+    ///@dev function to pause the contract
     function pause() public onlyOwner {
         _pause();
     }
@@ -245,9 +298,8 @@ function myElections() public view  whenNotPaused returns (Election[] memory){
 
     ///=================== MODIFIERS ===================
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner);
         _;
     }
-      
-    }
+}
