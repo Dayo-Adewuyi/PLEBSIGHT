@@ -1,0 +1,139 @@
+.navigation {
+    position: relative;
+    display: flex;
+    align-items: center;
+  justify-content: space-between;
+    height: 60px;
+    width: 100%;
+    padding: 0.5rem 0rem;
+    background-color: #fff;
+    color: black;
+    box-shadow: 0 2px 2px 2px rgba(9, 9, 9, 0.23);
+  }
+  
+  .brand-name {
+    text-decoration: none;
+    color: black;
+    font-size: 1.3rem;
+    margin-left: 1rem;
+  }
+  
+  .navigation-menu {
+    margin-left: auto;
+    padding-right: 80px;
+  }
+  
+  .navigation-menu ul {
+    display: flex;
+    padding: 0px;
+  }
+  
+  .navigation-menu li {
+    list-style-type: none;
+    margin: 0 1rem;
+  }
+  
+  .navigation-menu li a {
+    text-decoration: none;
+    display: block;
+    width: 100%;
+  }
+  
+  .hamburger {
+    border: 0;
+    height: 40px;
+    width: 40px;
+    padding: 0.5rem;
+    border-radius: 50%;
+    background-color: #283b8b;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    position: absolute;
+    top: 50%;
+    right: 25px;
+    transform: translateY(-50%);
+    display: none;
+  }
+  .close {
+    width: 40px;
+    position: absolute;
+  
+    color: black;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+    top: 50%;
+    right: 25px;
+    cursor: pointer;
+    display: none;
+}
+  
+  .hamburger:hover {
+    background-color: #2642af;
+  }
+  
+  .address {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 1rem;
+    border: none;
+    color: white;
+    background-color: #48cae4;
+    font-size: 1.1rem;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+    transition: 0.3s ease-in-out;
+    margin-left: 100px;
+   
+  }
+
+  @media screen and (max-width: 550px) {
+    .hamburger {
+      display: block;
+    }
+    .close {
+      display: block;
+    }
+
+    .address {
+        font-size: 0.8rem;
+        letter-spacing: 0.01rem;
+    }
+    
+  
+    
+    .navigation-menu ul {
+      flex-direction: column;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 60px);
+      background-color: white;
+      border-top: 1px solid black;
+      display: none;
+     
+     
+    }
+
+  
+    .navigation-menu li {
+      text-align: center;
+      margin: 0;
+    }
+  
+    .navigation-menu li a {
+      color: black;
+      width: 100%;
+      padding: 1.5rem 0;
+    }
+  
+    .navigation-menu li:hover {
+      background-color: #eee;
+    }
+  
+    .navigation-menu.expanded ul {
+      display: block;
+    }
+  }
+  
