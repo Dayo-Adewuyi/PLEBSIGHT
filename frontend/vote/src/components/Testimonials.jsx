@@ -24,10 +24,7 @@ export default function Testimonials() {
 
   return (
     <Section id="testimonials">
-      <div className="title">
-        <h2>ELECTION BOOTH</h2>
-      </div>
-      
+     
       <div className="testimonials">
         <div className="testimonial">
           {election.map((element, index) => {
@@ -39,7 +36,7 @@ export default function Testimonials() {
                   
                   return (<div className="election"><img src={`https://ipfs.infura.io/ipfs/${candidate.photoHash}`} width="70px" height="70px"/><br></br><p key={index}>{candidate.name}</p> 
                  
-                  <button onClick={() => vote( (candidate.candidateId).toNumber(), (element.electionId).toNumber())}>VOTE</button></div>)
+                  <Button onClick={() => vote( (candidate.candidateId).toNumber(), (element.electionId).toNumber())}>VOTE</Button></div>)
                   })}
                  
                 </div>
@@ -70,6 +67,15 @@ export default function Testimonials() {
     </Section>
   );
 }
+const Button = styled.button`
+  background-color: black;
+  color: white;
+  font-size: 20px;
+  padding: 10px 60px;
+  border-radius: 5px;
+  margin: 10px 0px;
+  cursor: pointer;
+`;
 
 const Section = styled.section`
   margin: 5rem 0;

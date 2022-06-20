@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { VotingContractAddress, AirdropContractAddress } from "../constants/constants";
 import "../styles/Services.css";
 import { ToastContainer, toast } from 'react-toastify';
+import { FaLink } from "react-icons/fa";
 
 import Confetti from 'react-confetti'
 
@@ -86,6 +87,7 @@ export default function Services() {
           <div className="winner-image">
             <img src={`https://ipfs.infura.io/ipfs/${winner.photoHash}`} alt="winner" />
             <p>{winner.name}</p>
+            <p>Share result with frens <FaLink/> <img alt="" src={"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://ipfs.infura.io/ipfs/"  + winner.photoHash}></img></p>
             <Confetti active={active} width={window.innerWidth} height={window.innerHeight} />
           </div>
         </div>
