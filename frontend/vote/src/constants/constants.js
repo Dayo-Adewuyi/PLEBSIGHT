@@ -1,3 +1,3 @@
 
-export const VotingContractAddress = '0x3044e32914457f1fF3F25e0e7856daBd018F43bF';
+export const VotingContractAddress = '0xaC86ee76acE6cf21744bCB6e5dAb6DEAcBa0Bb9B';
 
